@@ -14,11 +14,9 @@ const sendTokenResponse = (user, statusCode, res) => {
             Date.now() + 30 * 24 * 60 * 60 * 1000 // 30 días
         ),
         httpOnly: true,
+        secure: true, // Requerido para SameSite=None
+        sameSite: 'none', // Permite envío de cookies entre sitios (Netlify -> Cloudfront)
     };
-
-    if (process.env.NODE_ENV === 'production') {
-        options.secure = true;
-    }
 
     res
         .status(statusCode)
@@ -30,7 +28,7 @@ const sendTokenResponse = (user, statusCode, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                // token: token, // Opcional: remover token del body si se usan solo cookies
+                token: token,
             },
         });
 };
@@ -102,6 +100,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     res.cookie('token', 'none', {
         expires: new Date(Date.now() + 10 * 1000),
         httpOnly: true,
+        secure: true,
+        sameSite: 'none'
     });
 
     res.status(200).json({ success: true, data: {} });

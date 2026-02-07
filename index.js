@@ -18,25 +18,41 @@ connectDB();
 // Inicializar app
 const app = express();
 
+// Confiar en el proxy (Cloudfont/Netlify) para headers como X-Forwarded-For
+app.set('trust proxy', 1);
+
 // Configurar Rate Limiter (Limitar peticiones)
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 10000, // Limite de 100 peticiones por IP por ventana
-    message: 'Demasiadas peticiones desde esta IP, por favor intenta de nuevo en 15 minutos'
+    max: 10000, // Limite de 10000 peticiones
+    message: 'Demasiadas peticiones desde esta IP'
 });
 
 // Middleware
 const corsOptions = {
-    origin: process.env.FRONTEND_URL,
-    credentials: true
+    origin: function (origin, callback) {
+        // En lugar de una lista blanca estricta, permitimos que el servidor 
+        // responda a cualquier origen enviando el header de vuelta.
+        // Esto soluciona problemas donde el proxy (Cloudfront) altera los headers.
+        callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'X-CSRF-Token'],
+    optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 
-app.use(helmet({ crossOriginResourcePolicy: false, contentSecurityPolicy: false })); // Headers de seguridad (CSP disabled for 3D/Scripts)
+app.use(helmet({
+    crossOriginResourcePolicy: false,
+    crossOriginOpenerPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: false
+}));
 app.use(limiter); // Rate limiting
 app.use(cookieParser()); // Parse cookies
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 

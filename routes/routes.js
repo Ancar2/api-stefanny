@@ -146,6 +146,17 @@ router.post('/upload/local', protect, admin, localUpload.single('file'), (req, r
     res.json({ url: fileUrl });
 });
 
+// Public upload endpoint for testimonials (no auth required)
+router.post('/upload/testimonial', (req, res, next) => {
+    upload.single('image')(req, res, (err) => {
+        if (err) {
+            console.error('Multer/Cloudinary Error:', err);
+            return res.status(400).json({ message: err.message || 'Error subiendo archivo' });
+        }
+        next();
+    });
+}, uploadController.uploadFile);
+
 // --- Rutas de Contenido Dinámico ---
 router.get('/admin/content', protect, admin, contentController.getAllContent);
 router.get('/admin/content', protect, admin, contentController.getAllContent);
