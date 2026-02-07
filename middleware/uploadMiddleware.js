@@ -29,12 +29,17 @@ const storage = new CloudinaryStorage({
             resourceType = 'raw'; // For GLB/GLTF and others
         }
 
+        // Generar ID único usando nombre original + timestamp + random
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const nameStart = file.originalname.split('.')[0].replace(/[^a-zA-Z0-9]/g, '_'); // Sanitize
+
         const uploadParams = {
             folder: 'steffany-portfolio',
             resource_type: resourceType,
-            public_id: file.originalname.split('.')[0], // Keep original name (without ext) as ID basis
+            public_id: `${nameStart}-${uniqueSuffix}`,
             use_filename: true,
-            unique_filename: true,
+            unique_filename: false, // Ya lo hacemos nosotros manualmente
+            overwrite: false, // IMPORTANTE: No sobrescribir
         };
 
         // Only apply image transformations if it's an image

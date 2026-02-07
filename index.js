@@ -24,7 +24,7 @@ app.set('trust proxy', 1);
 // Configurar Rate Limiter (Limitar peticiones)
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 10000, // Limite de 10000 peticiones
+    max: 5000, // Limite de 10000 peticiones
     message: 'Demasiadas peticiones desde esta IP'
 });
 
