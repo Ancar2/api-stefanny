@@ -45,7 +45,7 @@ const storage = new CloudinaryStorage({
         // Only apply image transformations if it's an image
         if (isImage) {
             uploadParams.transformation = [{ width: 1200, height: 1200, crop: 'limit' }];
-            uploadParams.allowed_formats = ['jpg', 'png', 'jpeg', 'webp'];
+            uploadParams.allowed_formats = ['jpg', 'png', 'jpeg', 'webp', 'gif'];
         } else {
             // For raw files, allow specific formats or all
             // uploadParams.allowed_formats = ['glb', 'gltf', 'obj', 'pdf'];
