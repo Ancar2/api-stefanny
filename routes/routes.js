@@ -128,31 +128,40 @@ const localUpload = require('../middleware/localUpload.middleware');
 
 // --- ruta de Subida de Archivos --
 router.post('/upload', protect, admin, (req, res, next) => {
-    upload.single('image')(req, res, (err) => {
+    upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }])(req, res, (err) => {
         if (err) {
-            console.error('Multer/Cloudinary Error:', err);
+            console.error('Multer/S3 Error:', err);
             return res.status(400).json({ message: err.message || 'Error subiendo archivo' });
         }
+        req.file = (req.files && ((req.files.image && req.files.image[0]) || (req.files.file && req.files.file[0]))) || null;
         next();
     });
 }, uploadController.uploadFile);
 
-router.post('/upload/local', protect, admin, localUpload.single('file'), (req, res) => {
+router.post('/upload/local', protect, admin, (req, res, next) => {
+    localUpload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }])(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({ message: err.message || 'Error subiendo archivo local' });
+        }
+        req.file = (req.files && ((req.files.image && req.files.image[0]) || (req.files.file && req.files.file[0]))) || null;
+        next();
+    });
+}, (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No se subió ningún archivo' });
     }
-    // Return relative URL
     const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
     res.json({ url: fileUrl });
 });
 
 // Public upload endpoint for testimonials (no auth required)
 router.post('/upload/testimonial', (req, res, next) => {
-    upload.single('image')(req, res, (err) => {
+    upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }])(req, res, (err) => {
         if (err) {
-            console.error('Multer/Cloudinary Error:', err);
+            console.error('Multer/S3 Error:', err);
             return res.status(400).json({ message: err.message || 'Error subiendo archivo' });
         }
+        req.file = (req.files && ((req.files.image && req.files.image[0]) || (req.files.file && req.files.file[0]))) || null;
         next();
     });
 }, uploadController.uploadFile);
@@ -181,7 +190,6 @@ router.put('/admin/theme', protect, admin, themeController.updateTheme);
 
 
 module.exports = router;
-
 
 
 

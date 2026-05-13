@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
     // Accept images and 3D files
-    const allowedTypes = /jpeg|jpg|png|gif|webp|glb|gltf|bin|obj/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp|glb|gltf|bin|obj|mp4|mov|avi|mkv|webm|m4v/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === 'application/octet-stream' || file.mimetype === 'model/gltf-binary';
 
