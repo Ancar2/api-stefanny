@@ -41,6 +41,5 @@ const dynamicContentSchema = new mongoose.Schema({
 
 // Índices para búsquedas eficientes
 dynamicContentSchema.index({ section: 1, active: 1 });
-dynamicContentSchema.index({ key: 1 });
 
 module.exports = mongoose.model('DynamicContent', dynamicContentSchema);
